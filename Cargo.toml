@@ -1,5 +1,5 @@
 [package]
-    name    = "auth-microservice-letsgetrusty"
+    name    = "microservice-project"
     version = "0.1.0"
 
     edition = "2021"
@@ -31,4 +31,5 @@
     clap = { version = "4.2", features = ["derive"] }
 
 [build-dependencies]
-    tonic-build = "0.9" # used by all
+    # used by all
+    tonic-build = "0.9"
