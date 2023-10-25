@@ -7,7 +7,7 @@ use authentication::{auth_client::AuthClient, SignInRequest, SignOutRequest, Sig
 use crate::authentication::{SignInResponse, SignOutResponse, SignUpResponse, StatusCode};
 
 use tokio::time::{sleep, Duration};
-use tonic::{Request, Response};
+use tonic::Request;
 use uuid::Uuid;
 
 use std::env;
@@ -26,16 +26,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         let username: String = Uuid::new_v4().into();
         let password: String = Uuid::new_v4().into();
 
-        let response: Response<SignUpResponse> = client
+        let response: SignUpResponse = client
             .sign_up(Request::new(SignUpRequest {
                 username: username.clone(),
                 password: password.clone(),
             }))
-            .await?;
+            .await?
+            .into_inner();
 
         println!(
             "SIGN UP RESPONSE STATUS: {:?}",
-            StatusCode::from_i32(response.into_inner().status_code)
+            StatusCode::from_i32(response.status_code)
         );
 
         // ---------------------------------------------
@@ -52,15 +53,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         // ---------------------------------------------
 
-        let response: Response<SignOutResponse> = client
+        let response: SignOutResponse = client
             .sign_out(Request::new(SignOutRequest {
                 session_token: response.session_token,
             }))
-            .await?;
+            .await?
+            .into_inner();
 
         println!(
             "SIGN OUT RESPONSE STATUS: {:?}",
-            StatusCode::from_i32(response.into_inner().status_code)
+            StatusCode::from_i32(response.status_code)
         );
 
         println!("--------------------------------------",);
