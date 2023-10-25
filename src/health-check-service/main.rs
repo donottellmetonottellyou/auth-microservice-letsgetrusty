@@ -6,7 +6,7 @@ use tokio::time::{sleep, Duration};
 use tonic::{Request, Response};
 use uuid::Uuid;
 
-use crate::authentication::{StatusCode, SignUpResponse, SignInResponse, SignOutResponse};
+use crate::authentication::{SignInResponse, SignOutResponse, SignUpResponse, StatusCode};
 
 pub mod authentication {
     tonic::include_proto!("authentication");
@@ -15,21 +15,24 @@ pub mod authentication {
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // AUTH_SERVICE_HOST_NAME will be set to 'auth' when running the health check service in Docker
-    // ::0 is required for Docker to work: https://stackoverflow.com/questions/59179831/docker-app-server-ip-address-127-0-0-1-difference-of-0-0-0-0-ip
+    // ::0 is required for Docker to work:
+    // https://stackoverflow.com/questions/59179831/docker-app-server-ip-address-127-0-0-1-difference-of-0-0-0-0-ip
     let auth_hostname = env::var("AUTH_SERVICE_HOST_NAME").unwrap_or("[::0]".to_owned());
 
     // Establish connection when auth service
     let mut client = AuthClient::connect(format!("http://{}:50051", auth_hostname)).await?;
 
     loop {
-        let username: String = todo!(); // Create random username using new_v4()
-        let password: String = todo!(); // Create random password using new_v4()
+        let username: String = Uuid::new_v4().into();
+        let password: String = Uuid::new_v4().into();
 
-        let request: Request<SignUpRequest> = todo!(); // Create a new `SignUpRequest`.
+        let response: Response<SignUpResponse> = client
+            .sign_up(Request::new(SignUpRequest {
+                username: username.clone(),
+                password: password.clone(),
+            }))
+            .await?;
 
-        let response: Response<SignUpResponse> = todo!(); // Make a sign up request. Propagate any errors.
-
-        // Log the response
         println!(
             "SIGN UP RESPONSE STATUS: {:?}",
             StatusCode::from_i32(response.into_inner().status_code)
@@ -37,25 +40,27 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         // ---------------------------------------------
 
-        let request: Request<SignInRequest> = todo!(); // Create a new `SignInRequest`.
-
-        // Make a sign in request. Propagate any errors. Convert Response<SignInResponse> into SignInResponse.
-        let response: SignInResponse = todo!();
+        let response: SignInResponse = client
+            .sign_in(Request::new(SignInRequest { username, password }))
+            .await?
+            .into_inner();
 
         println!(
             "SIGN IN RESPONSE STATUS: {:?}",
-            todo!() // Log response status_code
+            StatusCode::from_i32(response.status_code)
         );
 
         // ---------------------------------------------
 
-        let request: Request<SignOutRequest> = todo!(); // Create a new `SignOutRequest`.
-
-        let response: Response<SignOutResponse> = todo!(); // Make a sign out request. Propagate any errors.
+        let response: Response<SignOutResponse> = client
+            .sign_out(Request::new(SignOutRequest {
+                session_token: response.session_token,
+            }))
+            .await?;
 
         println!(
             "SIGN OUT RESPONSE STATUS: {:?}",
-            todo!() // Log response status_code
+            StatusCode::from_i32(response.into_inner().status_code)
         );
 
         println!("--------------------------------------",);
