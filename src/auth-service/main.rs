@@ -1,5 +1,3 @@
-use std::sync::Mutex;
-
 mod auth;
 mod sessions;
 mod users;
@@ -7,6 +5,8 @@ mod users;
 use auth::*;
 use sessions::{Sessions, SessionsImpl};
 use users::{Users, UsersImpl};
+
+use std::sync::Mutex;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {

@@ -2,8 +2,9 @@ pub mod authentication {
     tonic::include_proto!("authentication");
 }
 
-use crate::authentication::{SignInResponse, SignOutResponse, SignUpResponse};
 use authentication::{auth_client::AuthClient, SignInRequest, SignOutRequest, SignUpRequest};
+
+use crate::authentication::{SignInResponse, SignOutResponse, SignUpResponse};
 
 use clap::{Parser, Subcommand};
 use tonic::{transport::Channel, Request};

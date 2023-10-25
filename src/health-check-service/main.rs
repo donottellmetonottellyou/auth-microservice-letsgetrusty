@@ -1,16 +1,16 @@
-use std::env;
+pub mod authentication {
+    tonic::include_proto!("authentication");
+}
 
-use authentication::auth_client::AuthClient;
-use authentication::{SignInRequest, SignOutRequest, SignUpRequest};
+use authentication::{auth_client::AuthClient, SignInRequest, SignOutRequest, SignUpRequest};
+
+use crate::authentication::{SignInResponse, SignOutResponse, SignUpResponse, StatusCode};
+
 use tokio::time::{sleep, Duration};
 use tonic::{Request, Response};
 use uuid::Uuid;
 
-use crate::authentication::{SignInResponse, SignOutResponse, SignUpResponse, StatusCode};
-
-pub mod authentication {
-    tonic::include_proto!("authentication");
-}
+use std::env;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {

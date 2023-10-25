@@ -1,18 +1,17 @@
-use std::sync::Mutex;
+pub mod authentication {
+    tonic::include_proto!("authentication");
+}
+
+use authentication::{
+    auth_server::Auth, SignInRequest, SignInResponse, SignOutRequest, SignOutResponse,
+    SignUpRequest, SignUpResponse, StatusCode,
+};
 
 use crate::{sessions::Sessions, users::Users};
 
 use tonic::{Request, Response, Status};
 
-use authentication::auth_server::Auth;
-use authentication::{
-    SignInRequest, SignInResponse, SignOutRequest, SignOutResponse, SignUpRequest, SignUpResponse,
-    StatusCode,
-};
-
-pub mod authentication {
-    tonic::include_proto!("authentication");
-}
+use std::sync::Mutex;
 
 // Re-exporting
 pub use authentication::auth_server::AuthServer;

@@ -1,6 +1,6 @@
-use std::collections::HashMap;
-
 use uuid::Uuid;
+
+use std::collections::HashMap;
 
 pub trait Sessions {
     fn create_session(&mut self, user_uuid: &str) -> String;
